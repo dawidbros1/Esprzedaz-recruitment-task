@@ -1,14 +1,15 @@
 class Product {
+   #wrapper;
+
    constructor(wrapper) {
-      this.wrapper = wrapper ?? $("<tr></tr>");
+      this.#wrapper = wrapper ?? $("<tr></tr>").addClass("product");
    }
 
-   initRemoveEvent() {
-      let removeButton = $(this.wrapper).find(".remove-product");
-      removeButton.click(() => this.remove());
+   getWrapper() {
+      return this.#wrapper;
    }
 
-   remove() {
-      this.wrapper.remove();
+   onDestroy() {
+      this.#wrapper.remove();
    }
 }

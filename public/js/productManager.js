@@ -1,42 +1,56 @@
 class ProductManager {
+   #container;
+   #addProductButton;
+   #builder;
+   #products;
+   #counter;
+
    constructor() {
-      this.container = $('#products-container');
-      this.addProductButton = $('.add-product');
-      this.builder = new ProductBuilder("product_batch_form");
-      this.products = [];
-      this.counter = this.container.find('tr').length;
+      this.#container = $('#products-container');
+      this.#addProductButton = $('.add-product');
+      this.#builder = new ProductBuilder("product_batch_form");
+      this.#products = [];
+      this.#counter = 0;
    }
 
    init() {
       // init entry products
-      const products = this.container.find('.product');
+      const products = this.#container.find('.product');
 
       for (let i = 0; i < products.length; i++) {
-         const product = new Product(products[i]);
-         product.initRemoveEvent();
-         this.products.push(product);
+         this.addProduct(new Product(products[i]));
       }
 
       // init add product button
-      this.addProductButton.click(() => {
+      this.#addProductButton.click(() => {
          const product = new Product();
 
-         this.builder
-            .addInput("name")
-            .addInput("description")
-            .addRemoveButton()
-            .build(product, this.counter);
-
-         product.initRemoveEvent();
+         this.#builder
+            .addInput("name", { class: "col-5" })
+            .addInput("description", { class: "col-5" })
+            .addRemoveButton({ class: "col-2" })
+            .build(product, this.#counter);
 
          this.addProduct(product);
       });
    }
 
    addProduct(product) {
-      this.counter++;
-      this.products.push(product);
-      this.container.append(product.wrapper);
+      this.addClickEventOnRemoveButton(product);
+      this.#products.push(product);
+      this.#container.append(product.getWrapper());
+      this.#counter++;
+   }
+
+   addClickEventOnRemoveButton(product) {
+      $(product.getWrapper()).find(".remove-product").click(() => {
+         const index = this.#products.findIndex(item => item === product);
+
+         if (index !== -1) {
+            product.onDestroy();
+            this.#products.splice(index, 1);
+         }
+      })
    }
 }
 
